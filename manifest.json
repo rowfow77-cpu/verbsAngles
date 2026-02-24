@@ -1,0 +1,21 @@
+{
+  "name": "Verbs Irregulars Master",
+  "short_name": "Verbs",
+  "description": "App per practicar verbs irregulars en anglès",
+  "start_url": "./verbs.html",
+  "display": "standalone",
+  "background_color": "#f1f5f9",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "icona.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icona.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

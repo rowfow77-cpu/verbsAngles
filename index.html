@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verbs Irregulars - Pràctica</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="apple-touch-icon" href="icona.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        
+        /* Navbar estil Base44 */
+        .nav-link { position: relative; color: #94a3b8; font-weight: 600; transition: color 0.2s; }
+        .nav-link.active { color: white; }
+        .nav-link.active::after { content: ''; position: absolute; bottom: -19px; left: 0; width: 100%; height: 4px; background-color: #3b82f6; border-radius: 2px; }
+
+        /* El quadre amb degradat de la teva imatge */
+        .infinitiv-box {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #d946ef 100%);
+            border-radius: 2.5rem; /* Molt arrodonit com a la captura */
+            padding: 3.5rem 2rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .option-btn { 
+            border: 2px solid #e2e8f0; 
+            border-radius: 1rem; 
+            padding: 1.25rem 1rem; 
+            font-weight: 700; 
+            transition: all 0.2s; 
+            background: white;
+            color: #475569;
+            text-align: center;
+        }
+        .option-btn:hover:not(:disabled) { border-color: #6366f1; background-color: #f5f3ff; color: #4338ca; }
+        
+        .correct { background-color: #10b981 !important; color: white !important; border-color: #10b981 !important; }
+        .incorrect { background-color: #ef4444 !important; color: white !important; border-color: #ef4444 !important; animation: shake 0.4s; }
+        
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <nav class="bg-[#0f172a] text-white py-5 shadow-xl sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-6 flex justify-between items-center">
+            <div class="flex items-center gap-10">
+                <h1 class="text-2xl font-extrabold tracking-tight italic">VERBS<span class="text-blue-500">IRREGULARS</span></h1>
+                <div class="hidden md:flex gap-8">
+                    <button onclick="showPage('game')" id="nav-game" class="nav-link active">Jugar</button>
+                    <button onclick="showPage('manage')" id="nav-manage" class="nav-link">Gestionar</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main id="page-game" class="max-w-4xl mx-auto px-6 py-10">
+        <div class="text-center mb-6">
+            <p id="game-counter" class="text-slate-500 font-semibold text-sm italic">Verb 1 de 0</p>
+        </div>
+
+        <div class="infinitiv-box text-center mb-10">
+            <span class="text-white/70 font-bold text-xs uppercase tracking-[0.2em]">Infinitiu</span>
+            <h2 id="target-verb" class="text-6xl font-black text-white mt-4 capitalize tracking-tight">---</h2>
+        </div>
+
+        <div class="bg-white rounded-[2rem] p-8 md:p-12 shadow-sm border border-slate-100">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-center text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Past Simple</h3>
+                    <div id="opts-ps" class="flex flex-col gap-3"></div>
+                </div>
+                <div>
+                    <h3 class="text-center text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Past Participle</h3>
+                    <div id="opts-pp" class="flex flex-col gap-3"></div>
+                </div>
+                <div>
+                    <h3 class="text-center text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Traducció</h3>
+                    <div id="opts-tr" class="flex flex-col gap-3"></div>
+                </div>
+            </div>
+
+            <div class="mt-12">
+                <button id="btn-next" disabled onclick="loadNextVerb()" 
+                    class="w-full py-5 rounded-2xl font-black text-lg transition-all shadow-lg bg-slate-100 text-slate-400 cursor-not-allowed uppercase tracking-widest">
+                    Següent Verb
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <main id="page-manage" class="max-w-6xl mx-auto px-6 py-12 hidden">
+        <div class="bg-white rounded-3xl shadow-xl p-8 border border-slate-200">
+            <h2 class="text-3xl font-black text-slate-800 mb-8">Gestionar Verbs</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-3 mb-10 p-4 bg-slate-50 rounded-2xl">
+                <input id="in-inf" type="text" placeholder="Infinitive" class="p-4 border rounded-xl outline-none focus:ring-2 ring-indigo-200 font-semibold">
+                <input id="in-ps" type="text" placeholder="Past Simple" class="p-4 border rounded-xl outline-none focus:ring-2 ring-indigo-200 font-semibold">
+                <input id="in-pp" type="text" placeholder="Past Participle" class="p-4 border rounded-xl outline-none focus:ring-2 ring-indigo-200 font-semibold">
+                <input id="in-tr" type="text" placeholder="Traducció" class="p-4 border rounded-xl outline-none focus:ring-2 ring-indigo-200 font-semibold">
+                <button onclick="saveVerb()" class="bg-indigo-600 text-white font-black py-4 rounded-xl hover:bg-indigo-700 transition">AFEGIR</button>
+            </div>
+
+            <div class="overflow-hidden rounded-2xl border border-slate-100">
+                <table class="w-full text-left">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="py-4 px-6 text-xs font-black text-slate-400 uppercase">Infinitive</th>
+                            <th class="py-4 px-6 text-xs font-black text-slate-400 uppercase">Past Simple</th>
+                            <th class="py-4 px-6 text-xs font-black text-slate-400 uppercase">Past Participle</th>
+                            <th class="py-4 px-6 text-xs font-black text-slate-400 uppercase">Traducció</th>
+                            <th class="py-4 px-6 text-xs font-black text-slate-400 uppercase text-right">Accions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="verbs-table-body" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const defaultVerbs = [
+            { inf: 'tell', ps: 'told', pp: 'told', tr: 'dir/explicar' },
+            { inf: 'buy', ps: 'bought', pp: 'bought', tr: 'comprar' },
+            { inf: 'catch', ps: 'caught', pp: 'caught', tr: 'agafar' },
+            { inf: 'give', ps: 'gave', pp: 'given', tr: 'donar' }
+        ];
+
+        let verbs = JSON.parse(localStorage.getItem('myVerbs')) || defaultVerbs;
+        let currentIdx = 0;
+        let status = { ps: false, pp: false, tr: false };
+
+        function showPage(page) {
+            document.getElementById('page-game').classList.toggle('hidden', page !== 'game');
+            document.getElementById('page-manage').classList.toggle('hidden', page !== 'manage');
+            document.getElementById('nav-game').classList.toggle('active', page === 'game');
+            document.getElementById('nav-manage').classList.toggle('active', page === 'manage');
+            if (page === 'manage') renderManageList();
+            else initGame();
+        }
+
+        function renderManageList() {
+            const tbody = document.getElementById('verbs-table-body');
+            tbody.innerHTML = '';
+            verbs.sort((a, b) => a.inf.localeCompare(b.inf));
+            verbs.forEach((v, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="py-4 px-6 font-bold text-slate-800">${v.inf}</td>
+                    <td class="py-4 px-6 text-slate-600">${v.ps}</td>
+                    <td class="py-4 px-6 text-slate-600">${v.pp}</td>
+                    <td class="py-4 px-6 text-slate-400 italic">${v.tr}</td>
+                    <td class="py-4 px-6 text-right">
+                        <button onclick="deleteVerb(${index})" class="text-red-400 hover:text-red-600 font-bold">Esborrar</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function saveVerb() {
+            const fields = ['in-inf', 'in-ps', 'in-pp', 'in-tr'];
+            const [inf, ps, pp, tr] = fields.map(id => document.getElementById(id).value.trim().toLowerCase());
+            if (inf && ps && pp && tr) {
+                verbs.push({ inf, ps, pp, tr });
+                localStorage.setItem('myVerbs', JSON.stringify(verbs));
+                fields.forEach(id => document.getElementById(id).value = '');
+                renderManageList();
+            }
+        }
+
+        function deleteVerb(index) {
+            if (confirm('Eliminar verb?')) {
+                verbs.splice(index, 1);
+                localStorage.setItem('myVerbs', JSON.stringify(verbs));
+                renderManageList();
+            }
+        }
+
+        function getSimilarOptions(correct, type) {
+            let options = new Set([correct]);
+            if (type === 'tr') {
+                while(options.size < 4 && verbs.length > 3) {
+                    options.add(verbs[Math.floor(Math.random() * verbs.length)].tr);
+                }
+            } else {
+                const confusing = [correct+'ed', correct.replace('o','u'), correct.replace('e','i'), correct+'en', correct.slice(0,-1), correct+'t'];
+                let shuffled = confusing.sort(() => 0.5 - Math.random());
+                for (let v of shuffled) { if (v !== correct) options.add(v); if (options.size === 4) break; }
+            }
+            while(options.size < 4) options.add(correct + (Math.random() > 0.5 ? 's' : 'er'));
+            return Array.from(options).sort(() => 0.5 - Math.random());
+        }
+
+        function initGame() {
+            if (verbs.length === 0) return;
+            status = { ps: false, pp: false, tr: false };
+            document.getElementById('game-counter').innerText = `Verb ${currentIdx + 1} de ${verbs.length}`;
+            
+            const nextBtn = document.getElementById('btn-next');
+            nextBtn.disabled = true;
+            nextBtn.className = "w-full py-5 rounded-2xl font-black text-lg bg-slate-100 text-slate-400 cursor-not-allowed uppercase tracking-widest";
+
+            const v = verbs[currentIdx];
+            document.getElementById('target-verb').innerText = v.inf;
+
+            renderCol('opts-ps', getSimilarOptions(v.ps, 'ps'), v.ps, 'ps');
+            renderCol('opts-pp', getSimilarOptions(v.pp, 'pp'), v.pp, 'pp');
+            renderCol('opts-tr', getSimilarOptions(v.tr, 'tr'), v.tr, 'tr');
+        }
+
+        function renderCol(id, items, correct, key) {
+            const container = document.getElementById(id);
+            container.innerHTML = '';
+            items.forEach(text => {
+                const b = document.createElement('button');
+                b.innerText = text;
+                b.className = 'option-btn';
+                b.onclick = () => {
+                    if (status[key]) return;
+                    if (text === correct) {
+                        b.classList.add('correct');
+                        status[key] = true;
+                        checkFinish();
+                    } else {
+                        b.classList.add('incorrect');
+                        setTimeout(() => b.classList.remove('incorrect'), 500);
+                    }
+                };
+                container.appendChild(b);
+            });
+        }
+
+        function checkFinish() {
+            if (status.ps && status.pp && status.tr) {
+                const nextBtn = document.getElementById('btn-next');
+                nextBtn.disabled = false;
+                nextBtn.className = "w-full py-5 rounded-2xl font-black text-lg shadow-xl bg-indigo-600 text-white hover:bg-indigo-700 cursor-pointer uppercase tracking-widest transition-all scale-[1.02]";
+            }
+        }
+
+        function loadNextVerb() {
+            currentIdx = (currentIdx + 1) % verbs.length;
+            initGame();
+        }
+
+        showPage('game');
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker registrat amb èxit', reg))
+                    .catch(err => console.error('Error al registrar el Service Worker', err));
+            });
+        }
+    </script>
+</body>
+</html>
