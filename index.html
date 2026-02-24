@@ -244,12 +244,31 @@
             }
         }
 
+       // Funció per barrejar un array (Algoritme Fisher-Yates)
+        function shuffleVerbs() {
+            for (let i = verbs.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [verbs[i], verbs[j]] = [verbs[j], verbs[i]];
+            }
+        }
+
         function loadNextVerb() {
-            currentIdx = (currentIdx + 1) % verbs.length;
+            currentIdx++;
+            
+            // Si hem arribat al final de la llista, tornem a barrejar i comencem de nou
+            if (currentIdx >= verbs.length) {
+                currentIdx = 0;
+                shuffleVerbs();
+                alert("FELICITATS! TORNEM-HI!");
+            }
+            
             initGame();
         }
 
+        // Modifica el final del teu script perquè barregi només començar
+        shuffleVerbs(); 
         showPage('game');
+
     </script>
     <script>
         if ('serviceWorker' in navigator) {
